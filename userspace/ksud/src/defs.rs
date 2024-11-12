@@ -34,6 +34,7 @@ pub const MODULE_ACTION_SH: &str = "action.sh";
 pub const DISABLE_FILE_NAME: &str = "disable";
 pub const UPDATE_FILE_NAME: &str = "update";
 pub const REMOVE_FILE_NAME: &str = "remove";
+pub const PARTITIONS_FILE_NAME: &str = "partitions";
 pub const SKIP_MOUNT_FILE_NAME: &str = "skip_mount";
 
 pub const VERSION_CODE: &str = include_str!(concat!(env!("OUT_DIR"), "/VERSION_CODE"));

@@ -42,24 +42,8 @@ pub fn mount_modules_systemlessly(module_dir: &str) -> Result<()> {
 
     let mut system_lowerdir: Vec<String> = Vec::new();
 
-    let partition = vec![
-        "vendor",
-        "product",
-        "system_ext",
-        "odm",
-        "oem",
-        "my_bigball",
-        "my_carrier",
-        "my_company",
-        "my_engineering",
-        "my_heytap",
-        "my_manifest",
-        "my_preload",
-        "my_product",
-        "my_region",
-        "my_reserve",
-        "my_stock",
-    ];
+    let partition = vec!["vendor", "product", "system_ext", "odm", "oem"];
+
     let mut partition_lowerdir: HashMap<String, Vec<String>> = HashMap::new();
     for ele in &partition {
         partition_lowerdir.insert((*ele).to_string(), Vec::new());
@@ -80,6 +64,22 @@ pub fn mount_modules_systemlessly(module_dir: &str) -> Result<()> {
             info!("module: {} skip_mount exist, skip!", module.display());
             continue;
         }
+
+        let partitions_file = module.join(defs::PARTITIONS_FILE_NAME);
+        match std::fs::read_to_string(partitions_file) {
+            Ok(partitions) => {
+                for line in partitions.lines() {
+                    if !line.is_empty() {
+                        let part_path = Path::new(&module).join(line);
+                        partition_lowerdir
+                            .entry(line.to_string())
+                            .or_insert_with(Vec::new)
+                            .push(format!("{}", part_path.display()));
+                    }
+                }
+            }
+            Err(_) => warn!("partitions file not found for module: {}", module.display()),
+        };
 
         let module_system = Path::new(&module).join("system");
         if module_system.is_dir() {
